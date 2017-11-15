@@ -75,8 +75,9 @@ class DBHelper extends SQLiteOpenHelper {
                 + FIELD_COURSE_ID + " INTEGER, "
                 + FIELD_INSTRUCTOR_ID + " INTEGER, "
                 + "FOREIGN KEY (" + FIELD_COURSE_ID + ") REFERENCES " + COURSES_TABLE + "(" + COURSES_KEY_FIELD_ID + "), "
-                + "FOREIGN KEY (" + FIELD_INSTRUCTOR_ID + ") REFERENCES " + COURSES_TABLE + "(" + INSTRUCTORS_KEY_FIELD_ID
+                + "FOREIGN KEY (" + FIELD_INSTRUCTOR_ID + ") REFERENCES " + INSTRUCTORS_TABLE + "(" + INSTRUCTORS_KEY_FIELD_ID
                 + ")";
+        database.execSQL(createQuery);
     }
 
     @Override
@@ -435,4 +436,35 @@ class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    public boolean importOfferingsFromCSV(String csvFileName)
+    {
+        AssetManager am = mContext.getAssets();
+        InputStream inStream = null;
+        try {
+            inStream = am.open(csvFileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        BufferedReader buffer = new BufferedReader(new InputStreamReader(inStream));
+        String line;
+        try {
+            while ((line = buffer.readLine()) != null) {
+                String[] fields = line.split(",");
+                if (fields.length != 4) {
+                    Log.d("OCC Course Finder", "Skipping Bad CSV Row: " + Arrays.toString(fields));
+                    continue;
+                }
+                int id = Integer.parseInt(fields[0].trim());
+                int semesterCode = Integer.parseInt(fields[1].trim());
+                Course course = getCourse(Long.parseLong(fields[2].trim()));
+                Instructor instructor = getInstructor(Long.parseLong(fields[3].trim()));
+                addOffering(new Offering(id, semesterCode, course, instructor));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 }
