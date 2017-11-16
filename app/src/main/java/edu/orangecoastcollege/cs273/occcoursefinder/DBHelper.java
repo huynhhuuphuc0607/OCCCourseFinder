@@ -69,14 +69,16 @@ class DBHelper extends SQLiteOpenHelper {
         //TODO:  Write the query to create the relationship table "Offerings"
         //TODO:  Make sure to include foreign keys to the Courses and Instructors tables
 
-        createQuery = "CREATE TABLE " +  OFFERINGS_TABLE + " ("
+        createQuery = "CREATE TABLE " + OFFERINGS_TABLE + "("
                 + FIELD_CRN + " INTEGER, "
                 + FIELD_SEMESTER_CODE + " INTEGER, "
                 + FIELD_COURSE_ID + " INTEGER, "
                 + FIELD_INSTRUCTOR_ID + " INTEGER, "
-                + "FOREIGN KEY (" + FIELD_COURSE_ID + ") REFERENCES " + COURSES_TABLE + "(" + COURSES_KEY_FIELD_ID + "), "
-                + "FOREIGN KEY (" + FIELD_INSTRUCTOR_ID + ") REFERENCES " + INSTRUCTORS_TABLE + "(" + INSTRUCTORS_KEY_FIELD_ID
-                + ")";
+                + "FOREIGN KEY(" + FIELD_COURSE_ID + ") REFERENCES "
+                + COURSES_TABLE + "(" + COURSES_KEY_FIELD_ID + "), "
+                + "FOREIGN KEY(" + FIELD_INSTRUCTOR_ID + ") REFERENCES "
+                + INSTRUCTORS_TABLE + "(" + INSTRUCTORS_KEY_FIELD_ID + "))";
+
         database.execSQL(createQuery);
     }
 
@@ -324,7 +326,7 @@ class DBHelper extends SQLiteOpenHelper {
     {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(FIELD_CRN, offering.getCRN());
+
         values.put(FIELD_SEMESTER_CODE, offering.getSemesterCode());
         values.put(FIELD_COURSE_ID, offering.getCourse().getId());
         values.put(FIELD_INSTRUCTOR_ID, offering.getInstructor().getId());
